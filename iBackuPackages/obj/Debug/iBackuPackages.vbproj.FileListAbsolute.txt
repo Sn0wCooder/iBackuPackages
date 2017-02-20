@@ -22,3 +22,15 @@ C:\Users\Leonardo\Desktop\iBackuPackages_old\iBackuPackages\obj\Debug\iBackuPack
 C:\Users\Leonardo\Desktop\iBackuPackages_old\iBackuPackages\obj\Debug\iBackuPackages.Form1.resources
 C:\Users\Leonardo\Desktop\iBackuPackages_old\iBackuPackages\obj\Debug\iBackuPackages.Resources.resources
 C:\Users\Leonardo\Desktop\iBackuPackages_old\iBackuPackages\obj\Debug\iBackuPackages.vbproj.GenerateResource.Cache
+C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\bin\Debug\iBackuPackages.exe.config
+C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\obj\Debug\iBackuPackages.exe
+C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\obj\Debug\iBackuPackages.xml
+C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\obj\Debug\iBackuPackages.pdb
+C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\bin\Debug\iBackuPackages.exe
+C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\bin\Debug\iBackuPackages.pdb
+C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\bin\Debug\iBackuPackages.xml
+C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\bin\Debug\Renci.SshNet.dll
+C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\obj\Debug\iBackuPackages.vbprojResolveAssemblyReference.cache
+C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\obj\Debug\iBackuPackages.Form1.resources
+C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\obj\Debug\iBackuPackages.Resources.resources
+C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\obj\Debug\iBackuPackages.vbproj.GenerateResource.Cache

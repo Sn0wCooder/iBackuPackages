@@ -243,7 +243,9 @@ Public Class Form1
                 sftpClient.DownloadFile("/etc/apt/sources.list.d/" & repos, File.OpenWrite(tempdir & "repos\" & repos))
             Next
 
-            '----------parte finale----------
+            File.Delete(tempdir & "repolist.txt")
+
+            '----------final part----------
 
             '-----disconnessione SSH tramite USB-----
 
@@ -261,6 +263,10 @@ Public Class Form1
             If sftpClient.IsConnected = True Then
                 sftpClient.Disconnect()
             End If
+
+            'zip all
+
+            ZipFile.CreateFromDirectory(tempdir, SaveFileDialog1.FileName)
 
             '-----parte finalissima: PrograssBar, Label e Timer-----
 

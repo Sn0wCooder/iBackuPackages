@@ -63,26 +63,6 @@ Namespace My.Resources
         '''<summary>
         '''  Cerca una risorsa localizzata di tipo System.Byte[].
         '''</summary>
-        Friend ReadOnly Property itunnel_mux() As Byte()
-            Get
-                Dim obj As Object = ResourceManager.GetObject("itunnel_mux", resourceCulture)
-                Return CType(obj,Byte())
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Cerca una risorsa localizzata di tipo System.Byte[].
-        '''</summary>
-        Friend ReadOnly Property libMobiledevice() As Byte()
-            Get
-                Dim obj As Object = ResourceManager.GetObject("libMobiledevice", resourceCulture)
-                Return CType(obj,Byte())
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Cerca una risorsa localizzata di tipo System.Byte[].
-        '''</summary>
         Friend ReadOnly Property Renci_SshNet() As Byte()
             Get
                 Dim obj As Object = ResourceManager.GetObject("Renci_SshNet", resourceCulture)

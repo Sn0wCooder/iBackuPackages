@@ -15,14 +15,6 @@ iBackuPackages
   Esegue l'override della proprietà CurrentUICulture del thread corrente per tutte le
   ricerche di risorse eseguite utilizzando questa classe di risorse fortemente tipizzata.
 </summary>
-</member><member name="P:iBackuPackages.My.Resources.Resources.itunnel_mux">
-	<summary>
-  Cerca una risorsa localizzata di tipo System.Byte[].
-</summary>
-</member><member name="P:iBackuPackages.My.Resources.Resources.libMobiledevice">
-	<summary>
-  Cerca una risorsa localizzata di tipo System.Byte[].
-</summary>
 </member><member name="P:iBackuPackages.My.Resources.Resources.Renci_SshNet">
 	<summary>
   Cerca una risorsa localizzata di tipo System.Byte[].

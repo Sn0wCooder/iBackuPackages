@@ -1,5 +1,8 @@
 ﻿Imports System.Management
 Imports System.Net
+Imports System.IO.Compression
+Imports System.IO
+
 Public Class Form1
 
     '----------INIZIO DEFINIZIONI----------
@@ -14,9 +17,7 @@ Public Class Form1
     '----------FINE DEFINIZIONI----------
 
     Private Sub Form1_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
-        If ControlBox = True Then
-            CleanUpResources()
-        Else
+        If ControlBox = False Then
             e.Cancel = True
         End If
     End Sub
@@ -29,8 +30,9 @@ Public Class Form1
 
         '----------cartella temporanea----------
 
-        CleanUpResources()
         CreateTempFolder()
+        'Process.Start(da)
+        Download_iproxy()
 
         '----------c'è o non c'è la DLL di Renci----------
 
@@ -53,18 +55,42 @@ Public Class Form1
         End If
     End Sub
 
+    Public Sub Download_iproxy()
+        If Not IO.Directory.Exists(da & "libimobiledevice") Then
+
+            MsgBox("Downloading iproxy (only for the first time). It will take a while!", MsgBoxStyle.Information, "Warning")
+
+            'download
+
+            client.DownloadFile(New Uri("https://github.com/Sn0wCooder/libimobiledevice-compiled-windows/archive/master.zip"), da & "libimobiledevice.zip")
+
+            'wait for the download
+
+            'client
+
+            'unzip
+            'Process.Start(da)
+            'IO.Directory.CreateDirectory(da & "libimobiledevice")
+            ZipFile.ExtractToDirectory(da & "libimobiledevice.zip", da)
+            IO.File.Delete(da & "libimobiledevice.zip")
+            My.Computer.FileSystem.RenameDirectory(da & "libimobiledevice-compiled-windows-master", "libimobiledevice")
+        End If
+
+
+    End Sub
+
     Public Sub CreateTempFolder()
         If Not My.Computer.FileSystem.DirectoryExists(da) Then
             My.Computer.FileSystem.CreateDirectory(da)
         End If
     End Sub
 
-    Public Sub CleanUpResources()
-        End_SSH_Over_USB()
-        If My.Computer.FileSystem.DirectoryExists(da) Then
-            My.Computer.FileSystem.DeleteDirectory(da, FileIO.DeleteDirectoryOption.DeleteAllContents)
-        End If
-    End Sub
+    'Public Sub CleanUpResources()
+    ' End_SSH_Over_USB()
+    'If My.Computer.FileSystem.DirectoryExists(da) Then
+    'My.Computer.FileSystem.DeleteDirectory(da, FileIO.DeleteDirectoryOption.DeleteAllContents)
+    'End If
+    'End Sub
 
     Public Sub ResetAll()
         Button1.Enabled = True
@@ -87,6 +113,42 @@ Public Class Form1
         End Try
     End Function
 
+    Public Function GetTempFolder() As String
+        Dim tempdir As String = Path.Combine(Path.GetTempPath, Path.GetRandomFileName)
+        Do While Directory.Exists(tempdir) Or File.Exists(tempdir)
+            tempdir = Path.Combine(Path.GetTempPath, Path.GetRandomFileName)
+        Loop
+        Return tempdir
+    End Function
+
+    Public Function RemoveBlankLines(file As String)
+        Dim fold As String = GetTempFolder() & "\"
+        My.Computer.FileSystem.CreateDirectory(fold)
+
+        Dim sr As New IO.StreamReader(file)
+        Dim line1 As String = sr.ReadLine
+        Dim sw As New System.IO.StreamWriter(fold & "noblank.txt")
+        While Not line1 Is Nothing
+            If Not line1 = "" Then
+                sw.WriteLine(line1)
+            End If
+            line1 = sr.ReadLine
+        End While
+        sw.Close()
+        sr.Close()
+        IO.File.Delete(file)
+        IO.File.Copy(fold & "noblank.txt", file)
+
+        ' Dim watcher As New FileSystemWatcher
+        ' watcher.Filter = "*.txt"
+        ' watcher.created+=new
+        ' watcher.Path = Path.GetDirectoryName(file)
+        ' watcher.EnableRaisingEvents = True
+        ' watcher.WaitForChanged(WatcherChangeTypes.All)
+
+        ' My.Computer.FileSystem.DeleteDirectory(fold, FileIO.DeleteDirectoryOption.DeleteAllContents, FileIO.RecycleOption.DeletePermanently)
+    End Function
+
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
         Try
             Button1.Enabled = False
@@ -98,7 +160,7 @@ Public Class Form1
             If IsUserlandConnected() = False Then
                 MsgBox("Error: please connect a device before continue.", MsgBoxStyle.Critical, "Error")
                 ResetAll()
-                Exit Sub
+                'Exit Sub
             End If
 
             '----------SaveFileDialog per il salvataggio del backup----------
@@ -112,7 +174,7 @@ Public Class Form1
 
             pb.Value = 20
             StatusLabel.Text = "Status: 20% - trying to start a SSH connection over USB..."
-            CopyFilesitunnel_mux()
+            'CopyFilesitunnel_mux()
             End_SSH_Over_USB()
             SSH_Over_USB("22", "22")
             Dim connInfo As New Renci.SshNet.PasswordConnectionInfo("127.0.0.1", "root", "alpine")
@@ -131,6 +193,7 @@ Public Class Form1
                      & "OpenSSH and APT 0.6 Transitional from Cydia, and that the default password is " + """" + "alpine" + """" + "than retry. If the problem persists, restart your device or contact me." _
                      , MsgBoxStyle.Critical, "Warning")
                 ResetAll()
+                'MsgBox(ex.Message)
                 Exit Sub
             End Try
 
@@ -143,14 +206,73 @@ Public Class Form1
                 sftpClient.Connect()
             End If
 
+            '----------creazione directory temporanea----------
+
+            Dim tempdir = GetTempFolder() & "\"
+            My.Computer.FileSystem.CreateDirectory(tempdir)
+            Process.Start(tempdir)
+            'File.Create(tempdir & "repolist.txt")
+
             '----------backup dei tweak installati----------
 
-            pb.Value = 70
-            StatusLabel.Text = "Status: 70% - getting all tweaks installed on the device..."
+            pb.Value = 50
+            StatusLabel.Text = "Status: 50% - getting all tweaks installed on the device..."
             cmd = sshClient.RunCommand("dpkg --get-selections")
             Dim Tweaks As String = cmd.Result
             Tweaks = Tweaks.Replace("install", Nothing)
-            My.Computer.FileSystem.WriteAllText(SaveFileDialog1.FileName, Tweaks, True)
+            My.Computer.FileSystem.WriteAllText(tempdir & "tweaks.txt", Tweaks, True)
+
+            '----------backup delle sorgenti----------
+
+            pb.Value = 70
+            StatusLabel.Text = "Status: 70% - backup sources..."
+            cmd = sshClient.RunCommand("ls /etc/apt/sources.list.d")
+            'MsgBox(cmd.Result)
+            Dim repo As String = cmd.Result
+            repo = repo.Replace("saurik.list", Nothing)
+            ' MsgBox(repo)
+            'My.Computer.FileSystem.WriteAllText(tempdir & "repolist.txt", repo, True).close()
+            ' Dim splitChar As String = "~"
+            'Dim strLine() As String = repo.Split(splitChar)
+
+            'Dim OutputRepoFile As New StreamWriter(da & Convert.ToString("repolist.txt"))
+            'For Each line As String In strLine
+            'OutputRepoFile.WriteLine(line)
+            'Next
+
+            'Dim f As New FileSystemWatcher(tempdir & "repolist.txt")
+            'f.WaitForChanged(WatcherChangeTypes.Changed)
+
+            'Dim outputrepofile As New StreamWriter(tempdir & "repolist.txt")
+            'Dim f As StreamWriter
+            'For Each line As String In repo
+            'outputrepofile.WriteLine(line)
+            ' Next
+            ' f.Close()
+            'For Each line In repo
+
+            ' Next
+            '\Dim file1 As FileStream = My.Computer.FileSystem.WriteAllText(tempdir & "repolist.txt")
+            '1file1.Close()
+
+            Dim RepoFile As System.IO.StreamWriter
+            RepoFile = My.Computer.FileSystem.OpenTextFileWriter(tempdir & "repolist.txt", True)
+            RepoFile.WriteLine(repo)
+            RepoFile.Close()
+
+            RemoveBlankLines(tempdir & "repolist.txt")
+
+            'removing last line
+
+            ' Dim list As New List(Of String)
+            ' Using r As StreamReader = New StreamReader(tempdir & "repolist.txt")
+            'While Not r.EndOfStream
+            'List.Add(r.ReadLine)
+            ' End While
+            ' End Using
+            'List.RemoveAt(List.Count - 1)
+
+
 
             '----------parte finale----------
 
@@ -187,46 +309,24 @@ Public Class Form1
         End Try
     End Sub
 
-    Public Sub CopyFilesitunnel_mux()
-
-        '----------terminando la connessione SSH tramite USB----------
-
-        End_SSH_Over_USB()
-
-        '----------eliminando i file di itunnel_mux
-
-        If System.IO.File.Exists(da & "itunnel_mux.exe") Then
-            System.IO.File.Delete(da & "itunnel_mux.exe")
-        End If
-        If System.IO.File.Exists(da & "libMobiledevice.dll") Then
-            System.IO.File.Delete(da & "libMobiledevice.dll")
-        End If
-
-        '----------copia i file dentro la cartella temporanea----------
-
-        My.Computer.FileSystem.WriteAllBytes(da & "itunnel_mux.exe", My.Resources.itunnel_mux, True)
-        My.Computer.FileSystem.WriteAllBytes(da & "libMobiledevice.dll", My.Resources.libMobiledevice, True)
-
-    End Sub
-
-    Public Shared Sub itunnel_mux(args As String)
-        Dim itunnel_mux_p As New Process()
+    Public Shared Sub iproxy(args As String)
+        Dim iproxy As New Process()
         Try
-            itunnel_mux_p.StartInfo.UseShellExecute = False
-            itunnel_mux_p.StartInfo.FileName = Form1.da + "itunnel_mux.exe"
-            itunnel_mux_p.StartInfo.Arguments = args
-            itunnel_mux_p.StartInfo.CreateNoWindow = True
-            itunnel_mux_p.Start()
+            iproxy.StartInfo.UseShellExecute = False
+            iproxy.StartInfo.FileName = Form1.da + "libimobiledevice\iproxy.exe"
+            iproxy.StartInfo.Arguments = args
+            iproxy.StartInfo.CreateNoWindow = True
+            iproxy.Start()
         Catch ex As Exception
         End Try
     End Sub
 
     Public Shared Sub SSH_Over_USB(iport As String, lport As String)
-        itunnel_mux("--iport " + iport + " --lport " + lport)
+        iproxy(iport + " " + lport)
     End Sub
 
     Public Shared Sub End_SSH_Over_USB()
-        Kill({"itunnel_mux"})
+        Kill({"iproxy"})
     End Sub
 
     Public Shared Sub Kill(ProcessesList As String())
@@ -327,7 +427,7 @@ Public Class Form1
 
             '----------copiando i file di itunnel_mux----------
 
-            CopyFilesitunnel_mux()
+            'CopyFilesitunnel_mux()
 
             '----------terminando la connessione SSH via USB----------
 

@@ -211,7 +211,6 @@ Public Class Form1
             Dim tempdir = GetTempFolder() & "\"
             My.Computer.FileSystem.CreateDirectory(tempdir)
             Process.Start(tempdir)
-            'File.Create(tempdir & "repolist.txt")
 
             '----------backup dei tweak installati----------
 
@@ -230,30 +229,6 @@ Public Class Form1
             'MsgBox(cmd.Result)
             Dim repo As String = cmd.Result
             repo = repo.Replace("saurik.list", Nothing)
-            ' MsgBox(repo)
-            'My.Computer.FileSystem.WriteAllText(tempdir & "repolist.txt", repo, True).close()
-            ' Dim splitChar As String = "~"
-            'Dim strLine() As String = repo.Split(splitChar)
-
-            'Dim OutputRepoFile As New StreamWriter(da & Convert.ToString("repolist.txt"))
-            'For Each line As String In strLine
-            'OutputRepoFile.WriteLine(line)
-            'Next
-
-            'Dim f As New FileSystemWatcher(tempdir & "repolist.txt")
-            'f.WaitForChanged(WatcherChangeTypes.Changed)
-
-            'Dim outputrepofile As New StreamWriter(tempdir & "repolist.txt")
-            'Dim f As StreamWriter
-            'For Each line As String In repo
-            'outputrepofile.WriteLine(line)
-            ' Next
-            ' f.Close()
-            'For Each line In repo
-
-            ' Next
-            '\Dim file1 As FileStream = My.Computer.FileSystem.WriteAllText(tempdir & "repolist.txt")
-            '1file1.Close()
 
             Dim RepoFile As System.IO.StreamWriter
             RepoFile = My.Computer.FileSystem.OpenTextFileWriter(tempdir & "repolist.txt", True)
@@ -262,17 +237,11 @@ Public Class Form1
 
             RemoveBlankLines(tempdir & "repolist.txt")
 
-            'removing last line
+            My.Computer.FileSystem.CreateDirectory(tempdir & "repos")
 
-            ' Dim list As New List(Of String)
-            ' Using r As StreamReader = New StreamReader(tempdir & "repolist.txt")
-            'While Not r.EndOfStream
-            'List.Add(r.ReadLine)
-            ' End While
-            ' End Using
-            'List.RemoveAt(List.Count - 1)
-
-
+            For Each repos As String In File.ReadLines(tempdir & "repolist.txt")
+                sftpClient.DownloadFile("/etc/apt/sources.list.d/" & repos, File.OpenWrite(tempdir & "repos\" & repos))
+            Next
 
             '----------parte finale----------
 

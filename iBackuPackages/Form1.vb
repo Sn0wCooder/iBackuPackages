@@ -491,8 +491,8 @@ Public Class Form1
                 AllRepos.Close()
             Next
 
-            RemoveBlankLines(tempdir & "repolistondevice.txt")
-            File.Delete(tempdir & "allrepos.txt")
+            RemoveBlankLines(tempdir & "allrepos.txt")
+            File.Delete(tempdir & "repolistondevice.txt")
 
             'Dim di As New DirectoryInfo(tempdir & "repos")
             'For Each fri In fiArr
@@ -506,8 +506,10 @@ Public Class Form1
             '
             Dim paths() As String = Directory.GetFiles(tempdir & "repos\", "*.list")
             For Each repofil As String In paths
-                File.AppendAllText(tempdir & "merged.txt", File.ReadAllText(repofil), Encoding.Default)
+                File.AppendAllText(tempdir & "merged_backup.txt", File.ReadAllText(repofil) & vbCrLf, Encoding.Default)
             Next
+
+            RemoveBlankLines(tempdir & "merged_backup.txt")
             '
 
             'Dim di As New DirectoryInfo(tempdir & "repos")
@@ -523,16 +525,29 @@ Public Class Form1
             ' Next
 
             ' Next
-            Dim reporight As String
-            For Each line In System.IO.File.ReadLines(tempdir & "merged.txt")
-                If Not InStr(line, tempdir & "allrepos.txt") Then
+            Dim reporight As String '= My.Computer.FileSystem.ReadAllText(tempdir & "merged_backup.txt")
+
+            For Each line In System.IO.File.ReadLines(tempdir & "merged_backup.txt")
+                'MsgBox(line)
+                ' If Not InStr(line, System.IO.File.ReadAllText(tempdir & "allrepos.txt")) Then
+                If Not System.IO.File.ReadAllText(tempdir & "allrepos.txt").Contains(line) Then
                     reporight = reporight & vbCrLf & line
                 End If
+                'End If
             Next
 
+            'File.Delete(tempdir & "allrepos.txt")
+            'File.Delete(tempdir & "merged.txt")
+            'File.Delete(tempdir & "repolistondevice.txt")
+
+            Dim RepoRightFile As System.IO.StreamWriter
+            RepoRightFile = My.Computer.FileSystem.OpenTextFileWriter(tempdir & "merged.txt", True)
+            RepoRightFile.WriteLine(reporight)
+            RepoRightFile.Close()
 
 
-            'RemoveBlankLines(tempdir & "merged.txt")
+
+            RemoveBlankLines(tempdir & "merged.txt")
 
             Dim randomFileName As String = Path.GetRandomFileName()
             Dim fs2 As System.IO.Stream = System.IO.File.OpenRead((tempdir & "merged.txt").ToString)

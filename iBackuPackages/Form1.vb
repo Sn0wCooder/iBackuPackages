@@ -467,7 +467,7 @@ Public Class Form1
             Dim reposs As String = cmd.Result
             reposs = reposs.Replace("saurik.list", Nothing)
 
-            Process.Start(tempdir)
+            ' Process.Start(tempdir)
 
             Dim RepoFile As System.IO.StreamWriter
             RepoFile = My.Computer.FileSystem.OpenTextFileWriter(tempdir & "repolistondevice.txt", True)

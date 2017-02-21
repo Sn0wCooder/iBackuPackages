@@ -568,9 +568,9 @@ Public Class Form1
 
     Public Sub Updater()
         If CheckForInternetConnection() = True Then '----------se la connessione a internet è disponibile----------
-            Dim versione As Integer = client.DownloadString("http://leoalfred.altervista.org/app/ibackupackages/versione.txt")
+            Dim versione As Integer = client.DownloadString("https://raw.githubusercontent.com/Sn0wCooder/iBackuPackages/master/value.txt")
             If versione > CurrentVersionInteger Then '-----se è disponibile un aggiornamento-----
-                Dim nuovaversione As String = client.DownloadString("http://leoalfred.altervista.org/app/ibackupackages/latestversion.txt")
+                Dim nuovaversione As String = client.DownloadString("https://raw.githubusercontent.com/Sn0wCooder/iBackuPackages/master/latestversion.txt")
                 LinkLabel1.Show()
                 Label1.Show()
                 Label3.Hide()

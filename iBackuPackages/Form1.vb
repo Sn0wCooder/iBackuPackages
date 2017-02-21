@@ -34,7 +34,7 @@ Public Class Form1
         'Process.Start(da)
         Download_iproxy()
 
-        '----------c'è o non c'è la DLL di Renci----------
+        '----------c'è o no la DLL di Renci----------
 
         CheckForRenciDLL()
 
@@ -57,20 +57,8 @@ Public Class Form1
 
     Public Sub Download_iproxy()
         If Not IO.Directory.Exists(da & "libimobiledevice") Then
-
             MsgBox("Downloading iproxy (only for the first time). It will take a while!", MsgBoxStyle.Information, "Warning")
-
-            'download
-
             client.DownloadFile(New Uri("https://github.com/Sn0wCooder/libimobiledevice-compiled-windows/archive/master.zip"), da & "libimobiledevice.zip")
-
-            'wait for the download
-
-            'client
-
-            'unzip
-            'Process.Start(da)
-            'IO.Directory.CreateDirectory(da & "libimobiledevice")
             ZipFile.ExtractToDirectory(da & "libimobiledevice.zip", da)
             IO.File.Delete(da & "libimobiledevice.zip")
             My.Computer.FileSystem.RenameDirectory(da & "libimobiledevice-compiled-windows-master", "libimobiledevice")
@@ -138,14 +126,6 @@ Public Class Form1
         sr.Close()
         IO.File.Delete(file)
         IO.File.Copy(fold & "noblank.txt", file)
-
-        ' Dim watcher As New FileSystemWatcher
-        ' watcher.Filter = "*.txt"
-        ' watcher.created+=new
-        ' watcher.Path = Path.GetDirectoryName(file)
-        ' watcher.EnableRaisingEvents = True
-        ' watcher.WaitForChanged(WatcherChangeTypes.All)
-
         ' My.Computer.FileSystem.DeleteDirectory(fold, FileIO.DeleteDirectoryOption.DeleteAllContents, FileIO.RecycleOption.DeletePermanently)
     End Function
 
@@ -240,7 +220,12 @@ Public Class Form1
             My.Computer.FileSystem.CreateDirectory(tempdir & "repos")
 
             For Each repos As String In File.ReadLines(tempdir & "repolist.txt")
-                sftpClient.DownloadFile("/etc/apt/sources.list.d/" & repos, File.OpenWrite(tempdir & "repos\" & repos))
+                ' sftpClient.DownloadFile("/etc/apt/sources.list.d/" & repos, File.OpenWrite(tempdir & "repos\" & repos))
+                Dim file As System.IO.StreamWriter
+                file = My.Computer.FileSystem.OpenTextFileWriter(tempdir & "repos\" & repos, True)
+                file.WriteLine(repos)
+                file.Close()
+
             Next
 
             File.Delete(tempdir & "repolist.txt")
@@ -265,6 +250,8 @@ Public Class Form1
             End If
 
             'zip all
+
+            'My.Computer.FileSystem.CopyDirectory(tempdir & "..\" & Path.GetDirectoryName(tempdir), da)
 
             ZipFile.CreateFromDirectory(tempdir, SaveFileDialog1.FileName)
 

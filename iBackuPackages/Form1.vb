@@ -591,10 +591,10 @@ Public Class Form1
     End Sub
 
     Private Sub LinkLabel2_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles LinkLabel2.LinkClicked
-        Process.Start("http://leoalfred.altervista.org/twitter.html")
+        Process.Start("http://twitter.com/Sn0wCooder")
     End Sub
 
     Private Sub LinkLabel1_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles LinkLabel1.LinkClicked
-        Process.Start("http://leoalfred.altervista.org/app/ibackupackages")
+        Process.Start("http://github.com/sn0wcooder")
     End Sub
 End Class

@@ -439,14 +439,6 @@ Public Class Form1
                 Console.Show()
             End If
 
-            Dim ifReboot As Boolean
-
-            If MessageBox.Show("Reboot device at the end?", "Reboot", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) = Windows.Forms.DialogResult.Yes Then
-                ifReboot = True
-            Else
-                ifReboot = False
-            End If
-
             'unzipping
 
             Dim tempdir = GetTempFolder() & "\"

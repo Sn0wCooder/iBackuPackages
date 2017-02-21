@@ -465,6 +465,23 @@ Public Class Form1
                 Exit Sub
             End If
 
+            'copy sources to device
+
+            'Dim fileEntries As String() = Directory.GetFiles(tempdir & "repos")
+            ' Dim fileName As String
+            ' For Each fileName In fileEntries
+            'sftpClient.UploadFile(New FileStream(New System.IO.StreamReader(tempdir & "repos\" & fileName), FileAccess.Read), "/")
+            Dim di As New DirectoryInfo(tempdir & "repos")
+            Dim fiArr As FileInfo() = di.GetFiles()
+            Dim fri As FileInfo
+            For Each fri In fiArr
+                Dim randomFileName As String = Path.GetRandomFileName()
+                'MsgBox(randomFileName)
+                'MsgBox(fri.Name)
+                Dim fs2 As System.IO.Stream = System.IO.File.OpenRead((tempdir & "repos\" & fri.Name).ToString)
+                sftpClient.UploadFile(fs2, "/" & Path.GetFileName(randomFileName) & ".list", True)
+            Next
+
             '----------iniziando a refreshare le sorgenti----------
 
             pb.Value = 50
@@ -477,7 +494,7 @@ Public Class Form1
             End If
             pb.Value = 15
             StatusLabel.Text = "Status: 15% - respringing device..."
-            cmd = sshClient.RunCommand("killall SpringBoard")
+            'cmd = sshClient.RunCommand("killall SpringBoard")
             pb.Value = 20
             StatusLabel.Text = "Status: 20% - updating sources..."
             If Not sftpClient.Exists("/var/lib/apt") Then

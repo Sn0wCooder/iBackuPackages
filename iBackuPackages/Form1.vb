@@ -220,14 +220,9 @@ Public Class Form1
             My.Computer.FileSystem.CreateDirectory(tempdir & "repos")
 
             For Each repos As String In File.ReadLines(tempdir & "repolist.txt")
-                ' sftpClient.DownloadFile("/etc/apt/sources.list.d/" & repos, File.OpenWrite(tempdir & "repos\" & repos))
                 Dim fs2 As System.IO.Stream = System.IO.File.OpenWrite((tempdir & "repos\" & repos).ToString)
                 sftpClient.DownloadFile("/etc/apt/sources.list.d/" & repos, fs2)
                 fs2.Close()
-                'Dim file As System.IO.StreamWriter
-                'file = My.Computer.FileSystem.OpenTextFileWriter(tempdir & "repos\" & repos, True)
-                'file.WriteLine(repos)
-                'file.Close()
 
             Next
 
@@ -470,36 +465,33 @@ Public Class Form1
 
             'copy sources to device
 
-            'Dim fileEntries As String() = Directory.GetFiles(tempdir & "repos")
-            ' Dim fileName As String
-            ' For Each fileName In fileEntries
-            'sftpClient.UploadFile(New FileStream(New System.IO.StreamReader(tempdir & "repos\" & fileName), FileAccess.Read), "/")
+            pb.Value = 40
+            StatusLabel.Text = "Status: 40% - restoring sources..."
+
             Dim di As New DirectoryInfo(tempdir & "repos")
             Dim fiArr As FileInfo() = di.GetFiles()
             Dim fri As FileInfo
             For Each fri In fiArr
                 Dim randomFileName As String = Path.GetRandomFileName()
-                'MsgBox(randomFileName)
-                'MsgBox(fri.Name)
                 Dim fs2 As System.IO.Stream = System.IO.File.OpenRead((tempdir & "repos\" & fri.Name).ToString)
-                sftpClient.UploadFile(fs2, "/" & Path.GetFileName(randomFileName) & ".list", True)
+                sftpClient.UploadFile(fs2, "/etc/apt/sources.list.d/" & Path.GetFileName(randomFileName) & ".list", True)
             Next
 
             '----------iniziando a refreshare le sorgenti----------
 
             pb.Value = 50
-            StatusLabel.Text = "Status: 50% - updating sources..."
+            StatusLabel.Text = "Status: 50% - updating sources (it will take a while!)..."
 
             '-----creando le cartelle se mancano-----
 
             If Not sftpClient.Exists("/var/lib/apt/lists/partial") Then
                 sftpClient.CreateDirectory("/var/lib/apt/lists/partial")
             End If
-            pb.Value = 15
-            StatusLabel.Text = "Status: 15% - respringing device..."
+            'pb.Value = 15
+            'StatusLabel.Text = "Status: 15% - respringing device..."
             'cmd = sshClient.RunCommand("killall SpringBoard")
-            pb.Value = 20
-            StatusLabel.Text = "Status: 20% - updating sources..."
+            'pb.Value = 20
+            'StatusLabel.Text = "Status: 20% - updating sources..."
             If Not sftpClient.Exists("/var/lib/apt") Then
                 sftpClient.CreateDirectory("/var/lib/apt")
             End If
@@ -513,6 +505,11 @@ Public Class Form1
             '-----refresh sources-----
 
             cmd = sshClient.RunCommand("apt-get update")
+
+            'respring
+            pb.Value = 65
+            StatusLabel.Text = "Status: 65% - respringing device..."
+            cmd = sshClient.RunCommand("killall SpringBoard")
 
             '-----iniziando a installare tutti i tweak-----
 

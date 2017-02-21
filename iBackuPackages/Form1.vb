@@ -595,6 +595,6 @@ Public Class Form1
     End Sub
 
     Private Sub LinkLabel1_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles LinkLabel1.LinkClicked
-        Process.Start("http://github.com/sn0wcooder")
+        Process.Start("http://github.com/Sn0wCooder/iBackuPackages")
     End Sub
 End Class

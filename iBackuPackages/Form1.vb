@@ -140,7 +140,7 @@ Public Class Form1
             If IsUserlandConnected() = False Then
                 MsgBox("Error: please connect a device before continue.", MsgBoxStyle.Critical, "Error")
                 ResetAll()
-                'Exit Sub
+                Exit Sub
             End If
 
             '----------SaveFileDialog per il salvataggio del backup----------
@@ -154,7 +154,6 @@ Public Class Form1
 
             pb.Value = 20
             StatusLabel.Text = "Status: 20% - trying to start a SSH connection over USB..."
-            'CopyFilesitunnel_mux()
             End_SSH_Over_USB()
             SSH_Over_USB("22", "22")
             Dim connInfo As New Renci.SshNet.PasswordConnectionInfo("127.0.0.1", "root", "alpine")
@@ -451,7 +450,7 @@ Public Class Form1
 
             Dim tempdir = GetTempFolder() & "\"
             My.Computer.FileSystem.CreateDirectory(tempdir)
-            Process.Start(tempdir)
+            'Process.Start(tempdir)
 
             ZipFile.ExtractToDirectory(OpenFileDialog1.FileName, tempdir)
 
@@ -487,11 +486,6 @@ Public Class Form1
             If Not sftpClient.Exists("/var/lib/apt/lists/partial") Then
                 sftpClient.CreateDirectory("/var/lib/apt/lists/partial")
             End If
-            'pb.Value = 15
-            'StatusLabel.Text = "Status: 15% - respringing device..."
-            'cmd = sshClient.RunCommand("killall SpringBoard")
-            'pb.Value = 20
-            'StatusLabel.Text = "Status: 20% - updating sources..."
             If Not sftpClient.Exists("/var/lib/apt") Then
                 sftpClient.CreateDirectory("/var/lib/apt")
             End If
@@ -507,6 +501,7 @@ Public Class Form1
             cmd = sshClient.RunCommand("apt-get update")
 
             'respring
+
             pb.Value = 65
             StatusLabel.Text = "Status: 65% - respringing device..."
             cmd = sshClient.RunCommand("killall SpringBoard")
@@ -514,8 +509,13 @@ Public Class Form1
             '-----iniziando a installare tutti i tweak-----
 
             pb.Value = 70
-            For Each tweak In System.IO.File.ReadLines(OpenFileDialog1.FileName)
-                StatusLabel.Text = "Status: 70% - installing tweak " & tweak & "..."
+            StatusLabel.Text = "Status: installing tweaks..."
+            Dim lineCount = File.ReadAllLines(tempdir & "tweaks.txt").Length
+            Dim progressPerTweak As Decimal = 20 / lineCount
+            MsgBox(progressPerTweak)
+            For Each tweak In System.IO.File.ReadLines(tempdir & "tweaks.txt")
+                pb.Value = Math.Round(progressPerTweak)
+                StatusLabel.Text = "Status: " & pb.Value & "% - installing tweak " & tweak & "..."
                 cmd = sshClient.RunCommand("apt-get install -y " & tweak)
             Next
 

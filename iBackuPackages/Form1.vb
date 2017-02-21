@@ -549,9 +549,12 @@ Public Class Form1
 
             RemoveBlankLines(tempdir & "merged.txt")
 
-            Dim randomFileName As String = Path.GetRandomFileName()
-            Dim fs2 As System.IO.Stream = System.IO.File.OpenRead((tempdir & "merged.txt").ToString)
-            sftpClient.UploadFile(fs2, "/etc/apt/sources.list.d/" & Path.GetFileName(randomFileName) & ".list", True)
+            If Not System.IO.File.ReadAllText(tempdir & "merged.txt") = Nothing Then
+                Dim randomFileName As String = Path.GetRandomFileName()
+                Dim fs2 As System.IO.Stream = System.IO.File.OpenRead((tempdir & "merged.txt").ToString)
+                cmd = sshClient.RunCommand("killall Cydia")
+                sftpClient.UploadFile(fs2, "/etc/apt/sources.list.d/" & Path.GetFileName(randomFileName) & ".list", True)
+            End If
 
             '----------iniziando a refreshare le sorgenti----------
 

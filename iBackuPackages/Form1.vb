@@ -230,6 +230,14 @@ Public Class Form1
 
             File.Delete(tempdir & "repolist.txt")
 
+            'zip all
+
+            If File.Exists(SaveFileDialog1.FileName) Then
+                File.Delete(SaveFileDialog1.FileName)
+            End If
+
+            ZipFile.CreateFromDirectory(tempdir, SaveFileDialog1.FileName)
+
             '----------final part----------
 
             '-----disconnessione SSH tramite USB-----
@@ -248,12 +256,6 @@ Public Class Form1
             If sftpClient.IsConnected = True Then
                 sftpClient.Disconnect()
             End If
-
-            'zip all
-
-            'My.Computer.FileSystem.CopyDirectory(tempdir & "..\" & Path.GetDirectoryName(tempdir), da)
-
-            ZipFile.CreateFromDirectory(tempdir, SaveFileDialog1.FileName)
 
             '-----parte finalissima: PrograssBar, Label e Timer-----
 

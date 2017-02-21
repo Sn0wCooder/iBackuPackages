@@ -221,11 +221,13 @@ Public Class Form1
 
             For Each repos As String In File.ReadLines(tempdir & "repolist.txt")
                 ' sftpClient.DownloadFile("/etc/apt/sources.list.d/" & repos, File.OpenWrite(tempdir & "repos\" & repos))
-                ' Dim fs2 As System.IO.Stream = System.IO.File.OpenWrite((tempdir & "repos\" & repos).ToString)
-                Dim file As System.IO.StreamWriter
-                file = My.Computer.FileSystem.OpenTextFileWriter(tempdir & "repos\" & repos, True)
-                file.WriteLine(repos)
-                file.Close()
+                Dim fs2 As System.IO.Stream = System.IO.File.OpenWrite((tempdir & "repos\" & repos).ToString)
+                sftpClient.DownloadFile("/etc/apt/sources.list.d/" & repos, fs2)
+                fs2.Close()
+                'Dim file As System.IO.StreamWriter
+                'file = My.Computer.FileSystem.OpenTextFileWriter(tempdir & "repos\" & repos, True)
+                'file.WriteLine(repos)
+                'file.Close()
 
             Next
 

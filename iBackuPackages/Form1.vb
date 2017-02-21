@@ -494,58 +494,26 @@ Public Class Form1
             RemoveBlankLines(tempdir & "allrepos.txt")
             File.Delete(tempdir & "repolistondevice.txt")
 
-            'Dim di As New DirectoryInfo(tempdir & "repos")
-            'For Each fri In fiArr
-            'Dim randomFileName As String = Path.GetRandomFileName()
-            'Dim fs2 As System.IO.Stream = System.IO.File.OpenRead((tempdir & "repos\" & fri.Name).ToString)
-            'sftpClient.UploadFile(fs2, "/etc/apt/sources.list.d/" & Path.GetFileName(randomFileName) & ".list", True)
-            ' Next
-
-            'merge repos
-
-            '
+           
             Dim paths() As String = Directory.GetFiles(tempdir & "repos\", "*.list")
             For Each repofil As String In paths
                 File.AppendAllText(tempdir & "merged_backup.txt", File.ReadAllText(repofil) & vbCrLf, Encoding.Default)
             Next
 
             RemoveBlankLines(tempdir & "merged_backup.txt")
-            '
 
-            'Dim di As New DirectoryInfo(tempdir & "repos")
-            'Dim fiArr As FileInfo() = di.GetFiles()
-            'Dim fri As FileInfo
-            'For Each fri In fiArr
-            'check for duplicate repos
-
-            'For Each line In System.IO.File.ReadLines(tempdir & "repos\" & fri.Name)
-            'If InStr(line, System.IO.File.ReadAllText(tempdir & "alrepos.txt")) Then
-            'Text.Replace(line, Nothing)
-            'End If
-            ' Next
-
-            ' Next
-            Dim reporight As String '= My.Computer.FileSystem.ReadAllText(tempdir & "merged_backup.txt")
+            Dim reporight As String
 
             For Each line In System.IO.File.ReadLines(tempdir & "merged_backup.txt")
-                'MsgBox(line)
-                ' If Not InStr(line, System.IO.File.ReadAllText(tempdir & "allrepos.txt")) Then
                 If Not System.IO.File.ReadAllText(tempdir & "allrepos.txt").Contains(line) Then
                     reporight = reporight & vbCrLf & line
                 End If
-                'End If
             Next
-
-            'File.Delete(tempdir & "allrepos.txt")
-            'File.Delete(tempdir & "merged.txt")
-            'File.Delete(tempdir & "repolistondevice.txt")
 
             Dim RepoRightFile As System.IO.StreamWriter
             RepoRightFile = My.Computer.FileSystem.OpenTextFileWriter(tempdir & "merged.txt", True)
             RepoRightFile.WriteLine(reporight)
             RepoRightFile.Close()
-
-
 
             RemoveBlankLines(tempdir & "merged.txt")
 

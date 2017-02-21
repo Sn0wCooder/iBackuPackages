@@ -42,7 +42,6 @@ Partial Class Console
         Me.Controls.Add(Me.RichTextBox1)
         Me.Name = "Console"
         Me.ShowIcon = False
-        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Console"
         Me.ResumeLayout(False)
 

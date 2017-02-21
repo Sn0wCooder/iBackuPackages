@@ -2,6 +2,7 @@
 Imports System.Net
 Imports System.IO.Compression
 Imports System.IO
+Imports System.Text
 
 Public Class Form1
 
@@ -467,14 +468,75 @@ Public Class Form1
             pb.Value = 40
             StatusLabel.Text = "Status: 40% - restoring sources..."
 
-            Dim di As New DirectoryInfo(tempdir & "repos")
-            Dim fiArr As FileInfo() = di.GetFiles()
-            Dim fri As FileInfo
-            For Each fri In fiArr
-                Dim randomFileName As String = Path.GetRandomFileName()
-                Dim fs2 As System.IO.Stream = System.IO.File.OpenRead((tempdir & "repos\" & fri.Name).ToString)
-                sftpClient.UploadFile(fs2, "/etc/apt/sources.list.d/" & Path.GetFileName(randomFileName) & ".list", True)
+            'check if sources are already present or not
+
+            cmd = sshClient.RunCommand("ls /etc/apt/sources.list.d")
+            'MsgBox(cmd.Result)
+            Dim reposs As String = cmd.Result
+            reposs = reposs.Replace("saurik.list", Nothing)
+
+            Process.Start(tempdir)
+
+            Dim RepoFile As System.IO.StreamWriter
+            RepoFile = My.Computer.FileSystem.OpenTextFileWriter(tempdir & "repolistondevice.txt", True)
+            RepoFile.WriteLine(reposs)
+            RepoFile.Close()
+            RemoveBlankLines(tempdir & "repolistondevice.txt")
+
+            For Each repo In System.IO.File.ReadLines(tempdir & "repolistondevice.txt")
+                Dim AllRepos As System.IO.StreamWriter
+                cmd = sshClient.RunCommand("cat /etc/apt/sources.list.d/" & repo)
+                AllRepos = My.Computer.FileSystem.OpenTextFileWriter(tempdir & "allrepos.txt", True)
+                AllRepos.WriteLine(cmd.Result)
+                AllRepos.Close()
             Next
+
+            RemoveBlankLines(tempdir & "repolistondevice.txt")
+            File.Delete(tempdir & "allrepos.txt")
+
+            'Dim di As New DirectoryInfo(tempdir & "repos")
+            'For Each fri In fiArr
+            'Dim randomFileName As String = Path.GetRandomFileName()
+            'Dim fs2 As System.IO.Stream = System.IO.File.OpenRead((tempdir & "repos\" & fri.Name).ToString)
+            'sftpClient.UploadFile(fs2, "/etc/apt/sources.list.d/" & Path.GetFileName(randomFileName) & ".list", True)
+            ' Next
+
+            'merge repos
+
+            '
+            Dim paths() As String = Directory.GetFiles(tempdir & "repos\", "*.list")
+            For Each repofil As String In paths
+                File.AppendAllText(tempdir & "merged.txt", File.ReadAllText(repofil), Encoding.Default)
+            Next
+            '
+
+            'Dim di As New DirectoryInfo(tempdir & "repos")
+            'Dim fiArr As FileInfo() = di.GetFiles()
+            'Dim fri As FileInfo
+            'For Each fri In fiArr
+            'check for duplicate repos
+
+            'For Each line In System.IO.File.ReadLines(tempdir & "repos\" & fri.Name)
+            'If InStr(line, System.IO.File.ReadAllText(tempdir & "alrepos.txt")) Then
+            'Text.Replace(line, Nothing)
+            'End If
+            ' Next
+
+            ' Next
+            Dim reporight As String
+            For Each line In System.IO.File.ReadLines(tempdir & "merged.txt")
+                If Not InStr(line, tempdir & "allrepos.txt") Then
+                    reporight = reporight & vbCrLf & line
+                End If
+            Next
+
+
+
+            'RemoveBlankLines(tempdir & "merged.txt")
+
+            Dim randomFileName As String = Path.GetRandomFileName()
+            Dim fs2 As System.IO.Stream = System.IO.File.OpenRead((tempdir & "merged.txt").ToString)
+            sftpClient.UploadFile(fs2, "/etc/apt/sources.list.d/" & Path.GetFileName(randomFileName) & ".list", True)
 
             '----------iniziando a refreshare le sorgenti----------
 
@@ -498,7 +560,9 @@ Public Class Form1
 
             '-----refresh sources-----
 
+            cmd = sshClient.RunCommand("dpkg --configure -a")
             cmd = sshClient.RunCommand("apt-get update")
+            Console.RichTextBox1.AppendText(cmd.Result)
 
             'respring
 
@@ -517,6 +581,7 @@ Public Class Form1
                 pb.Value = Math.Round(progressPerTweak)
                 StatusLabel.Text = "Status: " & pb.Value & "% - installing tweak " & tweak & "..."
                 cmd = sshClient.RunCommand("apt-get install -y " & tweak)
+                Console.RichTextBox1.AppendText(vbCrLf & cmd.Result)
             Next
 
             '----------uicache----------

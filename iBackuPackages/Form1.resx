@@ -128,7 +128,7 @@
   </metadata>
   <data name="Label2.Text" xml:space="preserve">
     <value>iBackuPackages is a program that allows you to perform backups
-of DEB packages on your phone. Before start, make sure you have
+of deb packages on your phone. Before start, make sure you have
 installed OpenSSH and APT 0.6 Transitional from Cydia, and that
 the default SSH password is "alpine".</value>
   </data>

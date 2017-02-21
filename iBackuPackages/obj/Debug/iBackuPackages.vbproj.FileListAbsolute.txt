@@ -34,3 +34,4 @@ C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\obj\Debug\iBackuPackag
 C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\obj\Debug\iBackuPackages.Form1.resources
 C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\obj\Debug\iBackuPackages.Resources.resources
 C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\obj\Debug\iBackuPackages.vbproj.GenerateResource.Cache
+C:\Users\Leonardo\Documents\iBackuPackages\iBackuPackages\obj\Debug\iBackuPackages.Console.resources

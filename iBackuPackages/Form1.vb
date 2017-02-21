@@ -190,7 +190,7 @@ Public Class Form1
 
             Dim tempdir = GetTempFolder() & "\"
             My.Computer.FileSystem.CreateDirectory(tempdir)
-            Process.Start(tempdir)
+            'Process.Start(tempdir)
 
             '----------backup dei tweak installati----------
 
@@ -434,6 +434,35 @@ Public Class Form1
 
             If sftpClient.IsConnected = False Then
                 sftpClient.Connect()
+            End If
+
+            Console.RichTextBox1.Clear()
+            If MessageBox.Show("Do you want to show console log?", "Console", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) = Windows.Forms.DialogResult.Yes Then
+                Console.Show()
+            End If
+
+            Dim ifReboot As Boolean
+
+            If MessageBox.Show("Reboot device at the end?", "Reboot", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) = Windows.Forms.DialogResult.Yes Then
+                ifReboot = True
+            Else
+                ifReboot = False
+            End If
+
+            'unzipping
+
+            Dim tempdir = GetTempFolder() & "\"
+            My.Computer.FileSystem.CreateDirectory(tempdir)
+            Process.Start(tempdir)
+
+            ZipFile.ExtractToDirectory(OpenFileDialog1.FileName, tempdir)
+
+            'check for a valid file
+
+            If Not File.Exists(tempdir & "tweaks.txt") Or Not My.Computer.FileSystem.DirectoryExists(tempdir & "repos") Then
+                MsgBox("iBackuPackages file broken!", MsgBoxStyle.Critical, "Error")
+                ResetAll()
+                Exit Sub
             End If
 
             '----------iniziando a refreshare le sorgenti----------

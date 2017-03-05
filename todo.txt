@@ -1,0 +1,7 @@
+detect itunes
+libimobiledevice, not iproxy
+if repos.content=nothing don't restore
+by sn0wcooder not leonardo alfreducci
+how to edit backups
+deb repack
+remove openssh dependence
